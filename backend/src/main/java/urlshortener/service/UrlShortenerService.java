@@ -1,4 +1,4 @@
-package service;
+package urlshortener.controller.service;
 
 import org.springframework.stereotype.Service;
 

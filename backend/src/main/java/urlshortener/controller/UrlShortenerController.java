@@ -1,4 +1,4 @@
-package controller;
+package urlshortener.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 

@@ -1,4 +1,4 @@
-package repository;
+package urlshortener.controller.repository;
 
 import org.springframework.stereotype.Repository;
 
