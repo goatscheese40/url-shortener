@@ -7,6 +7,7 @@ import urlshortener.model.Url;
 import urlshortener.service.UrlShortenerService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/url-shortener")
@@ -24,7 +25,8 @@ public class UrlShortenerController {
             String customAlias = request.getCustomAlias();
             Url url = urlShortenerService.createShortUrl(fullUrl, customAlias);
 
-            return ResponseEntity.ok(url.getShortUrl());
+            Map<String, String> response = Map.of("shortUrl", url.getShortUrl());
+            return ResponseEntity.status(201).body(response);
 
         } catch (IllegalArgumentException exception) {
             return ResponseEntity.badRequest().body(exception.getMessage());
@@ -44,7 +46,7 @@ public class UrlShortenerController {
     public ResponseEntity deleteShortenedUrl(@PathVariable (required = true) String customAlias) {
         boolean deleted = urlShortenerService.deleteShortenedUrl(customAlias);
         return deleted ? ResponseEntity.status(204).build() :
-                ResponseEntity.status(404).body("Alias not found");
+                ResponseEntity.status(404).body("Custom alias not found");
     }
 
     @GetMapping(value = "/urls")
