@@ -58,14 +58,11 @@ export default function UrlShortenerApp() {
       setResponse('Alias required for DELETE');
       return;
     }
-
     try {
       const result = await fetch(`${apiBase}/${alias}`, { method: 'DELETE' });
-
       if (!result.ok) {
         throw new Error('Custom alias not found');
       }
-
       setResponse(`Alias ${alias} deleted successfully`);
     } catch (err) {
       setResponse(err.message);
