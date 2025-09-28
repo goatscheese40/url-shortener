@@ -30,6 +30,8 @@ public class UrlShortenerServiceTest {
         Url result = urlShortenerService.createShortUrl("https://example.com", "alias1");
         assertEquals("alias1", result.getCustomAlias());
         assertEquals("https://example.com", result.getFullUrl());
+        assertEquals("http://localhost:8080/alias1", result.getShortUrl());
+        assertNotNull(result.getCreatedAt());
         verify(urlRepository).save(any());
     }
 
@@ -37,11 +39,23 @@ public class UrlShortenerServiceTest {
     void checkShortUrlGeneratedIfAliasNull() {
         when(urlRepository.existsById(anyString())).thenReturn(false);
         when(urlRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
-
         Url result = urlShortenerService.createShortUrl("https://example.com", null);
-
         assertNotNull(result.getCustomAlias());
         assertEquals("https://example.com", result.getFullUrl());
+        assertTrue(result.getShortUrl().contains("http://localhost:8080/"));
+        assertNotNull(result.getCreatedAt());
+        verify(urlRepository).save(any());
+    }
+
+    @Test
+    void checkShortUrlGeneratedIfAliasIsBlank() {
+        when(urlRepository.existsById(anyString())).thenReturn(false);
+        when(urlRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+        Url result = urlShortenerService.createShortUrl("https://example.com", "");
+        assertNotNull(result.getCustomAlias());
+        assertEquals("https://example.com", result.getFullUrl());
+        assertTrue(result.getShortUrl().contains("http://localhost:8080/"));
+        assertNotNull(result.getCreatedAt());
         verify(urlRepository).save(any());
     }
 
@@ -74,7 +88,7 @@ public class UrlShortenerServiceTest {
 
     /*Testing Find and Delete URL methods*/
     @Test
-    void checkFindUrlForGivenAliasReturnsUrl() {
+    void checkFindUrlForGivenAliasReturnsFullUrl() {
         Url url = new Url("alias1", "https://example.com");
         when(urlRepository.findById("alias1")).thenReturn(Optional.of(url));
 
@@ -84,14 +98,14 @@ public class UrlShortenerServiceTest {
     }
 
     @Test
-    void checkDeleteAliasReturnsTrueIfExists() {
+    void checkDeleteAliasReturnsTrueIfAliasExists() {
         when(urlRepository.existsById("alias1")).thenReturn(true);
         boolean deleted = urlShortenerService.deleteShortenedUrl("alias1");
         assertTrue(deleted);
     }
 
     @Test
-    void checkDeleteAliasReturnsFalseIfDoesNotExists() {
+    void checkDeleteAliasReturnsFalseIfAliasDoesNotExists() {
         when(urlRepository.existsById("alias1")).thenReturn(false);
         boolean deleted = urlShortenerService.deleteShortenedUrl("alias1");
         assertFalse(deleted);

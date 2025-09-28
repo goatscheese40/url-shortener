@@ -21,7 +21,7 @@ public class UrlShortenerService {
 
     public Url createShortUrl(String fullUrl, String customAlias) {
         validateInput(fullUrl,customAlias);
-        if (customAlias == null) {
+        if (customAlias == null || customAlias.isBlank()) {
             customAlias =  UUID.randomUUID().toString().substring(0, 6);
         }
         Url url = new Url(customAlias, fullUrl);
@@ -52,7 +52,7 @@ public class UrlShortenerService {
         if (fullUrl == null || !URL_REGEX.matcher(fullUrl).matches()) {
             throw new IllegalArgumentException("Invalid input for full URL");
         }
-        if (customAlias != null) {
+        if (customAlias != null && !customAlias.isBlank()) {
             if (!ALIAS_REGEX.matcher(customAlias).matches()) {
                 throw new IllegalArgumentException("Invalid input for custom alias");
             }
