@@ -29,24 +29,33 @@ public class UrlShortenerController {
             return ResponseEntity.status(201).body(response);
 
         } catch (IllegalArgumentException exception) {
-            return ResponseEntity.badRequest().body(exception.getMessage());
+            Map<String, String> errorResponse = Map.of("error", exception.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
         }
     }
 
     @GetMapping(value = "/{customAlias}")
     public ResponseEntity getFullUrl(@PathVariable (required = true) String customAlias) {
         return urlShortenerService.getFullUrl(customAlias)
-                .map(fullUrl -> ResponseEntity.status(302)
-                .header("Location", fullUrl)
-                .build())
-                .orElse(ResponseEntity.status(404).body("Custom alias not found"));
+                .map(fullUrl -> {
+                    Map<String, String> response = Map.of("fullUrl", fullUrl);
+                    return ResponseEntity.status(302).body(response);
+                })
+                .orElseGet(() -> {
+                    Map<String, String> errorResponse = Map.of("error", "Custom alias not found");
+                    return ResponseEntity.status(404).body(errorResponse);
+                });
     }
 
     @DeleteMapping(value = "/{customAlias}")
     public ResponseEntity deleteShortenedUrl(@PathVariable (required = true) String customAlias) {
         boolean deleted = urlShortenerService.deleteShortenedUrl(customAlias);
-        return deleted ? ResponseEntity.status(204).build() :
-                ResponseEntity.status(404).body("Custom alias not found");
+        if (deleted) {
+            return ResponseEntity.status(204).build();
+        } else {
+            Map<String, String> errorResponse = Map.of("error", "Custom alias not found");
+            return ResponseEntity.status(404).body(errorResponse);
+        }
     }
 
     @GetMapping(value = "/urls")

@@ -63,7 +63,7 @@ public class UrlShortenerControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("Custom alias already exists"));
+                .andExpect(jsonPath("$.error").value("Custom alias already exists"));
     }
 
     @Test
@@ -73,7 +73,7 @@ public class UrlShortenerControllerTest {
 
         mockMvc.perform(get("/api/url-shortener/alias1"))
                 .andExpect(status().isFound())
-                .andExpect(header().string("Location", "https://example.com"));
+                .andExpect(jsonPath("$.fullUrl").value( "https://example.com"));
     }
 
     @Test
@@ -83,7 +83,7 @@ public class UrlShortenerControllerTest {
 
         mockMvc.perform(get("/api/url-shortener/alias1"))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("Custom alias not found"));
+                .andExpect(jsonPath("$.error").value("Custom alias not found"));
     }
 
     @Test
@@ -102,7 +102,6 @@ public class UrlShortenerControllerTest {
 
         mockMvc.perform(delete("/api/url-shortener/alias1"))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("Custom alias not found"));
-
+                .andExpect(jsonPath("$.error").value("Custom alias not found"));
     }
 }
