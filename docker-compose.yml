@@ -1,6 +1,7 @@
 services:
   db:
-    image: postgres:15
+    build:
+      context: ./db
     container_name: url-shortener-db
     environment:
       POSTGRES_DB: url-shortener
@@ -10,8 +11,6 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
-
   backend:
     build:
       context: ./backend
