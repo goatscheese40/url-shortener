@@ -60,6 +60,12 @@ docker-compose down
 docker-compose down -v
 ```
 
+6. **Restarting the application**:
+
+```bash
+docker-compose up
+```
+
 ---
 
 ## Example Usage
